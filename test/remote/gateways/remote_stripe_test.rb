@@ -24,6 +24,15 @@ class RemoteStripeTest < Test::Unit::TestCase
     }
   end
 
+  def check_external_account_limit(account)
+    auth_header = { 'Authorization': "Bearer #{@gateway.options[:login]}" }
+    url = "#{@gateway.live_url}accounts/#{CGI.escape(account)}/external_accounts"
+    accounts_response = JSON.parse(@gateway.ssl_get("#{url}?limit=100", auth_header))
+    to_delete = accounts_response['data'].reject { |ac| ac['default_for_currency'] }
+
+    @gateway.ssl_request(:delete, "#{url}/#{to_delete.last['id']}", nil, auth_header) if accounts_response['data'].count >= 100
+  end
+
   def test_transcript_scrubbing
     credit_card = credit_card('4242424242424242', verification_value: '745')
     transcript = capture_transcript(@gateway) do
@@ -509,7 +518,7 @@ class RemoteStripeTest < Test::Unit::TestCase
 
   def test_successful_store_with_existing_account
     account = fixtures(:stripe_destination)[:stripe_user_id]
-
+    check_external_account_limit(account)
     assert response = @gateway.store(@debit_card, account: account)
     assert_success response
     assert_equal 'card', response.params['object']
