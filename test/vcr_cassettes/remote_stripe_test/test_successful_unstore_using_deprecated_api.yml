@@ -1,0 +1,200 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/customers
+    body:
+      encoding: UTF-8
+      string: description=Active+Merchant+Unstore+Customer&expand[0]=sources&card[number]=[FILTERED]&card[exp_month]=9&card[exp_year]=2022&card[cvc]=[FILTERED]&card[name]=Longbob+Longsen
+    headers:
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Authorization:
+      - Basic <AUTH_DATA>
+      User-Agent:
+      - Stripe/v1 ActiveMerchantBindings/1.124.0
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-Client-User-Agent:
+      - '{"bindings_version":"1.124.0","lang":"ruby","lang_version":"2.5.7 p206 (2019-10-01)","platform":"x86_64-darwin20","publisher":"active_merchant"}'
+      X-Stripe-Client-User-Metadata:
+      - '{"ip":null}'
+      Connection:
+      - close
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 14 Dec 2021 16:22:56 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1537'
+      Connection:
+      - close
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - 441dac34-d43f-48d2-ba2e-ff2b4c28b3d1
+      Original-Request:
+      - req_JojCP2dJjgj3az
+      Request-Id:
+      - req_JojCP2dJjgj3az
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2020-08-27'
+      Strict-Transport-Security:
+      - max-age=31556926; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "cus_KmCAYrhX6kw9Jv",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": 1639498976,
+          "currency": null,
+          "default_source": "card_1K6dmGAWOtgoysogdnpOoik0",
+          "delinquent": false,
+          "description": "Active Merchant Unstore Customer",
+          "discount": null,
+          "email": null,
+          "invoice_prefix": "CDDE7468",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": null,
+            "footer": null
+          },
+          "livemode": false,
+          "metadata": {
+          },
+          "name": null,
+          "next_invoice_sequence": 1,
+          "phone": null,
+          "preferred_locales": [
+
+          ],
+          "shipping": null,
+          "sources": {
+            "object": "list",
+            "data": [
+              {
+                "id": "card_1K6dmGAWOtgoysogdnpOoik0",
+                "object": "card",
+                "address_city": null,
+                "address_country": null,
+                "address_line1": null,
+                "address_line1_check": null,
+                "address_line2": null,
+                "address_state": null,
+                "address_zip": null,
+                "address_zip_check": null,
+                "brand": "Visa",
+                "country": "US",
+                "customer": "cus_KmCAYrhX6kw9Jv",
+                "cvc_check": "pass",
+                "dynamic_last4": null,
+                "exp_month": 9,
+                "exp_year": 2022,
+                "fingerprint": "hfaVNMiXc0dYSiC5",
+                "funding": "credit",
+                "last4": "4242",
+                "metadata": {
+                },
+                "name": "Longbob Longsen",
+                "tokenization_method": null
+              }
+            ],
+            "has_more": false,
+            "total_count": 1,
+            "url": "/v1/customers/cus_KmCAYrhX6kw9Jv/sources"
+          },
+          "tax_exempt": "none"
+        }
+  recorded_at: Tue, 14 Dec 2021 16:22:56 GMT
+- request:
+    method: delete
+    uri: https://api.stripe.com/v1/customers/cus_KmCAYrhX6kw9Jv/cards/card_1K6dmGAWOtgoysogdnpOoik0
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Basic <AUTH_DATA>
+      User-Agent:
+      - Stripe/v1 ActiveMerchantBindings/1.124.0
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-Client-User-Agent:
+      - '{"bindings_version":"1.124.0","lang":"ruby","lang_version":"2.5.7 p206 (2019-10-01)","platform":"x86_64-darwin20","publisher":"active_merchant"}'
+      X-Stripe-Client-User-Metadata:
+      - '{"ip":null}'
+      Connection:
+      - close
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 14 Dec 2021 16:22:57 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '83'
+      Connection:
+      - close
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Request-Id:
+      - req_ARJVkrXZDoMQBq
+      Stripe-Version:
+      - '2020-08-27'
+      Strict-Transport-Security:
+      - max-age=31556926; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "card_1K6dmGAWOtgoysogdnpOoik0",
+          "object": "card",
+          "deleted": true
+        }
+  recorded_at: Tue, 14 Dec 2021 16:22:57 GMT
+recorded_with: VCR 6.0.0

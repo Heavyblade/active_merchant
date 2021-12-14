@@ -1,0 +1,217 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/tokens?bank_account%5Baccount_holder_name%5D=Jim%20Smith&bank_account%5Baccount_holder_type%5D=individual&bank_account%5Baccount_number%5D=000123456789&bank_account%5Bcountry%5D=US&bank_account%5Bcurrency%5D=usd&bank_account%5Brouting_number%5D=110000000
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Authorization:
+      - Basic <AUTH_DATA>
+      User-Agent:
+      - Stripe/v1 ActiveMerchantBindings/1.124.0
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-Client-User-Agent:
+      - '{"bindings_version":"1.124.0","lang":"ruby","lang_version":"2.5.7 p206 (2019-10-01)","platform":"x86_64-darwin20","publisher":"active_merchant"}'
+      X-Stripe-Client-User-Metadata:
+      - '{"ip":null}'
+      Connection:
+      - close
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 14 Dec 2021 16:21:41 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '585'
+      Connection:
+      - close
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - 6ab5e89c-8cf5-4d68-9a62-0fe62c225e58
+      Original-Request:
+      - req_05AmmRDqpTotV6
+      Request-Id:
+      - req_05AmmRDqpTotV6
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2020-08-27'
+      Strict-Transport-Security:
+      - max-age=31556926; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "btok_1K6dl3AWOtgoysoghMsAxSnR",
+          "object": "token",
+          "bank_account": {
+            "id": "ba_1K6dl3AWOtgoysoglr6kMT23",
+            "object": "bank_account",
+            "account_holder_name": "Jim Smith",
+            "account_holder_type": "individual",
+            "account_type": null,
+            "bank_name": "STRIPE TEST BANK",
+            "country": "US",
+            "currency": "usd",
+            "fingerprint": "uCkXlMFxqys7GosR",
+            "last4": "6789",
+            "routing_number": "110000000",
+            "status": "new"
+          },
+          "client_ip": "181.51.32.190",
+          "created": 1639498901,
+          "livemode": false,
+          "type": "bank_account",
+          "used": false
+        }
+  recorded_at: Tue, 14 Dec 2021 16:21:41 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/customers
+    body:
+      encoding: UTF-8
+      string: expand[0]=sources&source=btok_1K6dl3AWOtgoysoghMsAxSnR
+    headers:
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Authorization:
+      - Basic <AUTH_DATA>
+      User-Agent:
+      - Stripe/v1 ActiveMerchantBindings/1.124.0
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-Client-User-Agent:
+      - '{"bindings_version":"1.124.0","lang":"ruby","lang_version":"2.5.7 p206 (2019-10-01)","platform":"x86_64-darwin20","publisher":"active_merchant"}'
+      X-Stripe-Client-User-Metadata:
+      - '{"ip":null}'
+      Connection:
+      - close
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 14 Dec 2021 16:21:42 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1269'
+      Connection:
+      - close
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - ca281393-0bea-4247-a76f-3ec32472f1de
+      Original-Request:
+      - req_85HL84MIIeUAc7
+      Request-Id:
+      - req_85HL84MIIeUAc7
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2020-08-27'
+      Strict-Transport-Security:
+      - max-age=31556926; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "cus_KmC9jIXQSWX9Cz",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": 1639498901,
+          "currency": null,
+          "default_source": "ba_1K6dl3AWOtgoysoglr6kMT23",
+          "delinquent": false,
+          "description": null,
+          "discount": null,
+          "email": null,
+          "invoice_prefix": "2882E185",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": null,
+            "footer": null
+          },
+          "livemode": false,
+          "metadata": {
+          },
+          "name": null,
+          "next_invoice_sequence": 1,
+          "phone": null,
+          "preferred_locales": [
+
+          ],
+          "shipping": null,
+          "sources": {
+            "object": "list",
+            "data": [
+              {
+                "id": "ba_1K6dl3AWOtgoysoglr6kMT23",
+                "object": "bank_account",
+                "account_holder_name": "Jim Smith",
+                "account_holder_type": "individual",
+                "account_type": null,
+                "bank_name": "STRIPE TEST BANK",
+                "country": "US",
+                "currency": "usd",
+                "customer": "cus_KmC9jIXQSWX9Cz",
+                "fingerprint": "uCkXlMFxqys7GosR",
+                "last4": "6789",
+                "metadata": {
+                },
+                "routing_number": "110000000",
+                "status": "new"
+              }
+            ],
+            "has_more": false,
+            "total_count": 1,
+            "url": "/v1/customers/cus_KmC9jIXQSWX9Cz/sources"
+          },
+          "tax_exempt": "none"
+        }
+  recorded_at: Tue, 14 Dec 2021 16:21:42 GMT
+recorded_with: VCR 6.0.0

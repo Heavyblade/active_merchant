@@ -1,0 +1,433 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/charges
+    body:
+      encoding: UTF-8
+      string: card[number]=[FILTERED]&card[exp_month]=9&card[exp_year]=2022&card[cvc]=[FILTERED]&card[name]=Longbob+Longsen&amount=100&currency=usd&description=ActiveMerchant+Test+Purchase&payment_user_agent=Stripe%2Fv1+ActiveMerchantBindings%2F1.124.0&metadata[email]=wow%40example.com&destination[account]=acct_1K5HlrPT5iqVqrJn
+    headers:
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Authorization:
+      - Basic <AUTH_DATA>
+      User-Agent:
+      - Stripe/v1 ActiveMerchantBindings/1.124.0
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-Client-User-Agent:
+      - '{"bindings_version":"1.124.0","lang":"ruby","lang_version":"2.5.7 p206 (2019-10-01)","platform":"x86_64-darwin20","publisher":"active_merchant"}'
+      X-Stripe-Client-User-Metadata:
+      - '{"ip":null}'
+      Connection:
+      - close
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 14 Dec 2021 16:21:58 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '3325'
+      Connection:
+      - close
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - 05aeb3a4-0cdb-433f-8ebb-6dde91d3ea23
+      Original-Request:
+      - req_M39JQQSuGc53cg
+      Request-Id:
+      - req_M39JQQSuGc53cg
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2020-08-27'
+      Strict-Transport-Security:
+      - max-age=31556926; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "ch_3K6dlIAWOtgoysog2gzNz9kD",
+          "object": "charge",
+          "amount": 100,
+          "amount_captured": 100,
+          "amount_refunded": 0,
+          "application": null,
+          "application_fee": null,
+          "application_fee_amount": null,
+          "balance_transaction": "txn_3K6dlIAWOtgoysog2wC13fme",
+          "billing_details": {
+            "address": {
+              "city": null,
+              "country": null,
+              "line1": null,
+              "line2": null,
+              "postal_code": null,
+              "state": null
+            },
+            "email": null,
+            "name": "Longbob Longsen",
+            "phone": null
+          },
+          "calculated_statement_descriptor": "WWW.JOHNDOEWEB.COM",
+          "captured": true,
+          "created": 1639498916,
+          "currency": "usd",
+          "customer": null,
+          "description": "ActiveMerchant Test Purchase",
+          "destination": "acct_1K5HlrPT5iqVqrJn",
+          "dispute": null,
+          "disputed": false,
+          "failure_code": null,
+          "failure_message": null,
+          "fraud_details": {
+          },
+          "invoice": null,
+          "livemode": false,
+          "metadata": {
+            "email": "wow@example.com"
+          },
+          "on_behalf_of": "acct_1K5HlrPT5iqVqrJn",
+          "order": null,
+          "outcome": {
+            "network_status": "approved_by_network",
+            "reason": null,
+            "risk_level": "normal",
+            "risk_score": 23,
+            "seller_message": "Payment complete.",
+            "type": "authorized"
+          },
+          "paid": true,
+          "payment_intent": null,
+          "payment_method": "card_1K6dlIAWOtgoysogxvo74KQv",
+          "payment_method_details": {
+            "card": {
+              "brand": "visa",
+              "checks": {
+                "address_line1_check": null,
+                "address_postal_code_check": null,
+                "cvc_check": "pass"
+              },
+              "country": "US",
+              "ds_transaction_id": null,
+              "exp_month": 9,
+              "exp_year": 2022,
+              "fingerprint": "hfaVNMiXc0dYSiC5",
+              "funding": "credit",
+              "installments": null,
+              "last4": "4242",
+              "mandate": null,
+              "moto": null,
+              "network": "visa",
+              "network_transaction_id": "1041029786787710",
+              "three_d_secure": null,
+              "wallet": null
+            },
+            "type": "card"
+          },
+          "receipt_email": null,
+          "receipt_number": null,
+          "receipt_url": "https://pay.stripe.com/receipts/acct_160DX6AWOtgoysog/ch_3K6dlIAWOtgoysog2gzNz9kD/rcpt_KmC9ZaVpgR8rdSu0Uzdwgsgkyatx66Z",
+          "refunded": false,
+          "refunds": {
+            "object": "list",
+            "data": [
+
+            ],
+            "has_more": false,
+            "total_count": 0,
+            "url": "/v1/charges/ch_3K6dlIAWOtgoysog2gzNz9kD/refunds"
+          },
+          "review": null,
+          "shipping": null,
+          "source": {
+            "id": "card_1K6dlIAWOtgoysogxvo74KQv",
+            "object": "card",
+            "address_city": null,
+            "address_country": null,
+            "address_line1": null,
+            "address_line1_check": null,
+            "address_line2": null,
+            "address_state": null,
+            "address_zip": null,
+            "address_zip_check": null,
+            "brand": "Visa",
+            "country": "US",
+            "customer": null,
+            "cvc_check": "pass",
+            "dynamic_last4": null,
+            "exp_month": 9,
+            "exp_year": 2022,
+            "fingerprint": "hfaVNMiXc0dYSiC5",
+            "funding": "credit",
+            "last4": "4242",
+            "metadata": {
+            },
+            "name": "Longbob Longsen",
+            "tokenization_method": null
+          },
+          "source_transfer": null,
+          "statement_descriptor": null,
+          "statement_descriptor_suffix": null,
+          "status": "succeeded",
+          "transfer": "tr_3K6dlIAWOtgoysog2kf7Z0e8",
+          "transfer_data": {
+            "amount": null,
+            "destination": "acct_1K5HlrPT5iqVqrJn"
+          },
+          "transfer_group": "group_ch_3K6dlIAWOtgoysog2gzNz9kD"
+        }
+  recorded_at: Tue, 14 Dec 2021 16:21:57 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/charges/ch_3K6dlIAWOtgoysog2gzNz9kD/refunds
+    body:
+      encoding: UTF-8
+      string: amount=80&reverse_transfer=true&expand[0]=charge
+    headers:
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Authorization:
+      - Basic <AUTH_DATA>
+      User-Agent:
+      - Stripe/v1 ActiveMerchantBindings/1.124.0
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-Client-User-Agent:
+      - '{"bindings_version":"1.124.0","lang":"ruby","lang_version":"2.5.7 p206 (2019-10-01)","platform":"x86_64-darwin20","publisher":"active_merchant"}'
+      X-Stripe-Client-User-Metadata:
+      - '{"ip":null}'
+      Connection:
+      - close
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 14 Dec 2021 16:22:00 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '4555'
+      Connection:
+      - close
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - 9ba18ad6-cc27-4df6-ba4e-8454c47c96b5
+      Original-Request:
+      - req_hm2ueBjHOLpHy7
+      Request-Id:
+      - req_hm2ueBjHOLpHy7
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2020-08-27'
+      Strict-Transport-Security:
+      - max-age=31556926; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "re_3K6dlIAWOtgoysog29nx7ehg",
+          "object": "refund",
+          "amount": 80,
+          "balance_transaction": "txn_3K6dlIAWOtgoysog2Jl4xL92",
+          "charge": {
+            "id": "ch_3K6dlIAWOtgoysog2gzNz9kD",
+            "object": "charge",
+            "amount": 100,
+            "amount_captured": 100,
+            "amount_refunded": 80,
+            "application": null,
+            "application_fee": null,
+            "application_fee_amount": null,
+            "balance_transaction": "txn_3K6dlIAWOtgoysog2wC13fme",
+            "billing_details": {
+              "address": {
+                "city": null,
+                "country": null,
+                "line1": null,
+                "line2": null,
+                "postal_code": null,
+                "state": null
+              },
+              "email": null,
+              "name": "Longbob Longsen",
+              "phone": null
+            },
+            "calculated_statement_descriptor": "WWW.JOHNDOEWEB.COM",
+            "captured": true,
+            "created": 1639498916,
+            "currency": "usd",
+            "customer": null,
+            "description": "ActiveMerchant Test Purchase",
+            "destination": "acct_1K5HlrPT5iqVqrJn",
+            "dispute": null,
+            "disputed": false,
+            "failure_code": null,
+            "failure_message": null,
+            "fraud_details": {
+            },
+            "invoice": null,
+            "livemode": false,
+            "metadata": {
+              "email": "wow@example.com"
+            },
+            "on_behalf_of": "acct_1K5HlrPT5iqVqrJn",
+            "order": null,
+            "outcome": {
+              "network_status": "approved_by_network",
+              "reason": null,
+              "risk_level": "normal",
+              "risk_score": 23,
+              "seller_message": "Payment complete.",
+              "type": "authorized"
+            },
+            "paid": true,
+            "payment_intent": null,
+            "payment_method": "card_1K6dlIAWOtgoysogxvo74KQv",
+            "payment_method_details": {
+              "card": {
+                "brand": "visa",
+                "checks": {
+                  "address_line1_check": null,
+                  "address_postal_code_check": null,
+                  "cvc_check": "pass"
+                },
+                "country": "US",
+                "ds_transaction_id": null,
+                "exp_month": 9,
+                "exp_year": 2022,
+                "fingerprint": "hfaVNMiXc0dYSiC5",
+                "funding": "credit",
+                "installments": null,
+                "last4": "4242",
+                "mandate": null,
+                "moto": null,
+                "network": "visa",
+                "network_transaction_id": "1041029786787710",
+                "three_d_secure": null,
+                "wallet": null
+              },
+              "type": "card"
+            },
+            "receipt_email": null,
+            "receipt_number": null,
+            "receipt_url": "https://pay.stripe.com/receipts/acct_160DX6AWOtgoysog/ch_3K6dlIAWOtgoysog2gzNz9kD/rcpt_KmC9ZaVpgR8rdSu0Uzdwgsgkyatx66Z",
+            "refunded": false,
+            "refunds": {
+              "object": "list",
+              "data": [
+                {
+                  "id": "re_3K6dlIAWOtgoysog29nx7ehg",
+                  "object": "refund",
+                  "amount": 80,
+                  "balance_transaction": "txn_3K6dlIAWOtgoysog2Jl4xL92",
+                  "charge": "ch_3K6dlIAWOtgoysog2gzNz9kD",
+                  "created": 1639498918,
+                  "currency": "usd",
+                  "metadata": {
+                  },
+                  "payment_intent": null,
+                  "reason": null,
+                  "receipt_number": null,
+                  "source_transfer_reversal": null,
+                  "status": "succeeded",
+                  "transfer_reversal": "trr_1K6dlLAWOtgoysog8KPZs0cG"
+                }
+              ],
+              "has_more": false,
+              "total_count": 1,
+              "url": "/v1/charges/ch_3K6dlIAWOtgoysog2gzNz9kD/refunds"
+            },
+            "review": null,
+            "shipping": null,
+            "source": {
+              "id": "card_1K6dlIAWOtgoysogxvo74KQv",
+              "object": "card",
+              "address_city": null,
+              "address_country": null,
+              "address_line1": null,
+              "address_line1_check": null,
+              "address_line2": null,
+              "address_state": null,
+              "address_zip": null,
+              "address_zip_check": null,
+              "brand": "Visa",
+              "country": "US",
+              "customer": null,
+              "cvc_check": "pass",
+              "dynamic_last4": null,
+              "exp_month": 9,
+              "exp_year": 2022,
+              "fingerprint": "hfaVNMiXc0dYSiC5",
+              "funding": "credit",
+              "last4": "4242",
+              "metadata": {
+              },
+              "name": "Longbob Longsen",
+              "tokenization_method": null
+            },
+            "source_transfer": null,
+            "statement_descriptor": null,
+            "statement_descriptor_suffix": null,
+            "status": "succeeded",
+            "transfer": "tr_3K6dlIAWOtgoysog2kf7Z0e8",
+            "transfer_data": {
+              "amount": null,
+              "destination": "acct_1K5HlrPT5iqVqrJn"
+            },
+            "transfer_group": "group_ch_3K6dlIAWOtgoysog2gzNz9kD"
+          },
+          "created": 1639498918,
+          "currency": "usd",
+          "metadata": {
+          },
+          "payment_intent": null,
+          "reason": null,
+          "receipt_number": null,
+          "source_transfer_reversal": null,
+          "status": "succeeded",
+          "transfer_reversal": "trr_1K6dlLAWOtgoysog8KPZs0cG"
+        }
+  recorded_at: Tue, 14 Dec 2021 16:21:59 GMT
+recorded_with: VCR 6.0.0

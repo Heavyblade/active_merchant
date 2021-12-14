@@ -1,0 +1,229 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/customers
+    body:
+      encoding: UTF-8
+      string: description=Active+Merchant+Update+Credit+Card&expand[0]=sources&card[number]=[FILTERED]&card[exp_month]=9&card[exp_year]=2022&card[cvc]=[FILTERED]&card[name]=Longbob+Longsen
+    headers:
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Authorization:
+      - Basic <AUTH_DATA>
+      User-Agent:
+      - Stripe/v1 ActiveMerchantBindings/1.124.0
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-Client-User-Agent:
+      - '{"bindings_version":"1.124.0","lang":"ruby","lang_version":"2.5.7 p206 (2019-10-01)","platform":"x86_64-darwin20","publisher":"active_merchant"}'
+      X-Stripe-Client-User-Metadata:
+      - '{"ip":null}'
+      Connection:
+      - close
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 14 Dec 2021 16:22:58 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '1539'
+      Connection:
+      - close
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - f91153c5-8b01-4fa1-8366-bd239d06de15
+      Original-Request:
+      - req_T1wn9ZuPeAtjmx
+      Request-Id:
+      - req_T1wn9ZuPeAtjmx
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2020-08-27'
+      Strict-Transport-Security:
+      - max-age=31556926; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "cus_KmCAiyUkG1paMG",
+          "object": "customer",
+          "address": null,
+          "balance": 0,
+          "created": 1639498977,
+          "currency": null,
+          "default_source": "card_1K6dmIAWOtgoysogoamkIVUL",
+          "delinquent": false,
+          "description": "Active Merchant Update Credit Card",
+          "discount": null,
+          "email": null,
+          "invoice_prefix": "A1D6F20C",
+          "invoice_settings": {
+            "custom_fields": null,
+            "default_payment_method": null,
+            "footer": null
+          },
+          "livemode": false,
+          "metadata": {
+          },
+          "name": null,
+          "next_invoice_sequence": 1,
+          "phone": null,
+          "preferred_locales": [
+
+          ],
+          "shipping": null,
+          "sources": {
+            "object": "list",
+            "data": [
+              {
+                "id": "card_1K6dmIAWOtgoysogoamkIVUL",
+                "object": "card",
+                "address_city": null,
+                "address_country": null,
+                "address_line1": null,
+                "address_line1_check": null,
+                "address_line2": null,
+                "address_state": null,
+                "address_zip": null,
+                "address_zip_check": null,
+                "brand": "Visa",
+                "country": "US",
+                "customer": "cus_KmCAiyUkG1paMG",
+                "cvc_check": "pass",
+                "dynamic_last4": null,
+                "exp_month": 9,
+                "exp_year": 2022,
+                "fingerprint": "hfaVNMiXc0dYSiC5",
+                "funding": "credit",
+                "last4": "4242",
+                "metadata": {
+                },
+                "name": "Longbob Longsen",
+                "tokenization_method": null
+              }
+            ],
+            "has_more": false,
+            "total_count": 1,
+            "url": "/v1/customers/cus_KmCAiyUkG1paMG/sources"
+          },
+          "tax_exempt": "none"
+        }
+  recorded_at: Tue, 14 Dec 2021 16:22:58 GMT
+- request:
+    method: post
+    uri: https://api.stripe.com/v1/customers/cus_KmCAiyUkG1paMG/cards/card_1K6dmIAWOtgoysogoamkIVUL
+    body:
+      encoding: UTF-8
+      string: name=John+Doe&address_line1=123+Main+Street&address_city=Pleasantville&address_state=NY&address_zip=12345&exp_year=2023&exp_month=6
+    headers:
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Authorization:
+      - Basic <AUTH_DATA>
+      User-Agent:
+      - Stripe/v1 ActiveMerchantBindings/1.124.0
+      Stripe-Version:
+      - '2020-08-27'
+      X-Stripe-Client-User-Agent:
+      - '{"bindings_version":"1.124.0","lang":"ruby","lang_version":"2.5.7 p206 (2019-10-01)","platform":"x86_64-darwin20","publisher":"active_merchant"}'
+      X-Stripe-Client-User-Metadata:
+      - '{"ip":null}'
+      Connection:
+      - close
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 14 Dec 2021 16:22:59 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '617'
+      Connection:
+      - close
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Methods:
+      - GET, POST, HEAD, OPTIONS, DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Expose-Headers:
+      - Request-Id, Stripe-Manage-Version, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required
+      Access-Control-Max-Age:
+      - '300'
+      Cache-Control:
+      - no-cache, no-store
+      Idempotency-Key:
+      - bc425b28-e933-4e7e-977b-539e8f36a757
+      Original-Request:
+      - req_4BkvBjK0kViAz7
+      Request-Id:
+      - req_4BkvBjK0kViAz7
+      Stripe-Should-Retry:
+      - 'false'
+      Stripe-Version:
+      - '2020-08-27'
+      Strict-Transport-Security:
+      - max-age=31556926; includeSubDomains; preload
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id": "card_1K6dmIAWOtgoysogoamkIVUL",
+          "object": "card",
+          "address_city": "Pleasantville",
+          "address_country": null,
+          "address_line1": "123 Main Street",
+          "address_line1_check": "pass",
+          "address_line2": null,
+          "address_state": "NY",
+          "address_zip": "12345",
+          "address_zip_check": "pass",
+          "brand": "Visa",
+          "country": "US",
+          "customer": "cus_KmCAiyUkG1paMG",
+          "cvc_check": "pass",
+          "dynamic_last4": null,
+          "exp_month": 6,
+          "exp_year": 2023,
+          "fingerprint": "hfaVNMiXc0dYSiC5",
+          "funding": "credit",
+          "last4": "4242",
+          "metadata": {
+          },
+          "name": "John Doe",
+          "tokenization_method": null
+        }
+  recorded_at: Tue, 14 Dec 2021 16:22:59 GMT
+recorded_with: VCR 6.0.0

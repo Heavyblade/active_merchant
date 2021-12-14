@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class RemoteStripeTest < Test::Unit::TestCase
+  prepend VCRRemote
+
   def setup
     @gateway = StripeGateway.new(fixtures(:stripe))
 
