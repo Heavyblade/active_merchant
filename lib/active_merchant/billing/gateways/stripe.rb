@@ -74,7 +74,7 @@ module ActiveMerchant #:nodoc:
 
       def initialize(options = {})
         requires!(options, :login)
-        @api_key = options[:login]
+        @api_key = 'sk_test_3OD4TdKSIOhDOL2146JJcC79'
         @fee_refund_api_key = options[:fee_refund_login]
         super
       end
@@ -200,9 +200,14 @@ module ActiveMerchant #:nodoc:
           params = { card: token_exchange_response.params['token']['id'] } if token_exchange_response.success?
         elsif payment.is_a?(StripePaymentToken)
           add_payment_token(params, payment, options)
-        elsif payment.is_a?(Check)
+       # elsif payment.is_a?(ActiveMerchant::Billing::NetworkTokenizationCreditCard)
+       #   bank_token_response = tokenize_bank_account(payment)
+        #  return bank_token_response
+        elsif payment.is_a?(Check) || payment.is_a?(ActiveMerchant::Billing::NetworkTokenizationCreditCard)
           bank_token_response = tokenize_bank_account(payment)
-          return bank_token_response unless bank_token_response.success?
+          #p bank_token_response
+          #p bank_token_response
+          return bank_token_response unless bank_token_response.success? ||
 
           params = { source: bank_token_response.params['token']['id'] }
         else
@@ -212,7 +217,7 @@ module ActiveMerchant #:nodoc:
         post[:validate] = options[:validate] unless options[:validate].nil?
         post[:description] = options[:description] if options[:description]
         post[:email] = options[:email] if options[:email]
-
+        p options
         if options[:account]
           add_external_account(post, params, payment)
           commit(:post, "accounts/#{CGI.escape(options[:account])}/external_accounts", post, options)
@@ -659,7 +664,67 @@ module ActiveMerchant #:nodoc:
         response
       end
 
+      def api_request2(method, endpoint, parameters = nil, options = {})
+        raw_response = response = nil
+        begin
+          #raw_response = ssl_request(method, self.live_url + endpoint, post_data(parameters), headers(options))
+          #p self.live_url + endpoint
+          #p '/////?'
+          #p post_data(parameters)
+          #response = parse(raw_response)
+          #raw_response = ssl_request(method, self.live_url + endpoint, post_data(parameters), headers(options))
+          #p headers(options)
+          p 'asas'
+          p'//////0'
+          p raw_response
+          p raw_response =   raw_ssl_request(method, self.live_url + endpoint, post_data(parameters), headers(options)).body
+          response = parse(raw_response)
+          p response['id']
+
+
+        rescue ResponseError => e
+          raw_response = e.response.body
+          response = response_error(raw_response)
+        rescue JSON::ParserError
+          response = json_error(raw_response)
+        end
+        response
+      end
+
+      def commit2(method, url, parameters = nil, options = {})
+      # p '(((('
+    # p method
+    # p parameters
+    # p url
+    # p options
+    #p add_expand_parameters(parameters, options)
+    add_expand_parameters(parameters, options) if parameters
+    response = api_request2(method, url, parameters, options)
+    response['webhook_id'] = options[:webhook_id] if options[:webhook_id]
+    success = success_from(response, options)
+
+    card = card_from_response(response)
+    avs_code = AVS_CODE_TRANSLATOR["line1: #{card['address_line1_check']}, zip: #{card['address_zip_check']}"]
+    cvc_code = CVC_CODE_TRANSLATOR[card['cvc_check']]
+    Response.new(success,
+      message_from(success, response),
+      response,
+      test: response_is_test?(response),
+      #authorization: authorization_from(success, url, method, response),
+      avs_result: { code: avs_code },
+      cvv_result: cvc_code,
+      emv_authorization: emv_authorization_from_response(response),
+      error_code: success ? nil : error_code_from(response))
+  end
+      
+
       def commit(method, url, parameters = nil, options = {})
+          # p '(((('
+        # p method
+        # p parameters
+        # p url
+        # p options
+        #p add_expand_parameters(parameters, options)
         add_expand_parameters(parameters, options) if parameters
         response = api_request(method, url, parameters, options)
         response['webhook_id'] = options[:webhook_id] if options[:webhook_id]
@@ -681,7 +746,6 @@ module ActiveMerchant #:nodoc:
 
       def authorization_from(success, url, method, response)
         return response.fetch('error', {})['charge'] unless success
-
         if url == 'customers'
           [response['id'], response.dig('sources', 'data').first&.dig('id')].join('|')
         elsif method == :post && (url.match(/customers\/.*\/cards/) || url.match(/payment_methods\/.*\/attach/))
@@ -755,27 +819,47 @@ module ActiveMerchant #:nodoc:
       end
 
       def tokenize_bank_account(bank_account, options = {})
-        account_holder_type = BANK_ACCOUNT_HOLDER_TYPE_MAPPING[bank_account.account_holder_type]
+        if bank_account.is_a?(Check)
+          account_holder_type = BANK_ACCOUNT_HOLDER_TYPE_MAPPING[bank_account.account_holder_type]
 
-        post = {
-          bank_account: {
-            account_number: bank_account.account_number,
-            country: 'US',
-            currency: 'usd',
-            routing_number: bank_account.routing_number,
-            account_holder_name: bank_account.name,
-            account_holder_type: account_holder_type
+          post = {
+            bank_account: {
+              account_number: bank_account.account_number,
+              country: 'US',
+              currency: 'usd',
+              routing_number: bank_account.routing_number,
+              account_holder_name: bank_account.name,
+              account_holder_type: account_holder_type
+            }
           }
-        }
 
-        token_response = api_request(:post, "tokens?#{post_data(post)}")
-        success = token_response['error'].nil?
-
-        if success && token_response['id']
-          Response.new(success, nil, token: token_response)
+          token_response = api_request(:post, "tokens", post, {})
+          success = token_response['error'].nil?
         else
-          Response.new(success, token_response['error']['message'])
+          tokenization_method = 'android_pay'
+          if bank_account.source == 'apple_pay'
+            tokenization_method = 'apple_pay'
+          end
+          post ={
+            card: {
+              number: bank_account.number,
+              exp_month: bank_account.month,
+              exp_year: bank_account.year,
+              tokenization_method: tokenization_method,
+              eci: bank_account.eci,
+              cryptogram: bank_account.payment_cryptogram,
+            }
+          }
+          token_response = api_request2(:post, "tokens", post, {})
+          success = token_response['error'].nil?
         end
+    
+        if success && token_response['id']
+          Response.new(success, nil, token: token_response)    
+        else
+          Response.new(success, token_responsiar['error']['message'])
+        end
+        
       end
 
       def ach?(payment_method)
@@ -809,6 +893,14 @@ module ActiveMerchant #:nodoc:
           dest[dest_path.last] = source
         end
       end
+
+
+
+     
     end
+    
   end
+
+
+ 
 end

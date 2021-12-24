@@ -186,11 +186,14 @@ module ActiveMerchant #:nodoc:
       def store(payment_method, options = {})
         params = {}
         post = {}
-
         # If customer option is provided, create a payment method and attach to customer id
         # Otherwise, create a customer, then attach
         if payment_method.is_a?(StripePaymentToken) || payment_method.is_a?(ActiveMerchant::Billing::CreditCard)
+          if payment_method.is_a?(ActiveMerchant::Billing::NetworkTokenizationCreditCard)
+            super(payment_method, options)
+          else
           result = add_payment_method_token(params, payment_method, options)
+          
           return result if result.is_a?(ActiveMerchant::Billing::Response)
 
           if options[:customer]
@@ -207,6 +210,7 @@ module ActiveMerchant #:nodoc:
           attach_parameters = { customer: customer_id }
           attach_parameters[:validate] = options[:validate] unless options[:validate].nil?
           commit(:post, "payment_methods/#{params[:payment_method]}/attach", attach_parameters, options)
+        end
         else
           super(payment_method, options)
         end
