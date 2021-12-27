@@ -182,8 +182,12 @@ module ActiveMerchant #:nodoc:
 
         # If customer option is provided, create a payment method and attach to customer id
         # Otherwise, create a customer, then attach
+        #if payment_method.is_a?(ActiveMerchant::Billing::NetworkTokenizationCreditCard)
+          
+          #super(payment_method, options)
         if payment_method.is_a?(StripePaymentToken) || payment_method.is_a?(ActiveMerchant::Billing::CreditCard)
           result = add_payment_method_token(params, payment_method, options)
+          
           return result if result.is_a?(ActiveMerchant::Billing::Response)
 
           if options[:customer]
@@ -193,10 +197,13 @@ module ActiveMerchant #:nodoc:
             post[:email] = options[:email] if options[:email]
             options = format_idempotency_key(options, 'customer')
             post[:expand] = [:sources]
-            customer = commit(:post, 'customers', post, options)
+
+           
+            customer = commit2(:post, 'customers', post, options)
             customer_id = customer.params['id']
           end
           options = format_idempotency_key(options, 'attach')
+         
           attach_parameters = { customer: customer_id }
           attach_parameters[:validate] = options[:validate] unless options[:validate].nil?
           commit(:post, "payment_methods/#{params[:payment_method]}/attach", attach_parameters, options)
@@ -459,6 +466,63 @@ module ActiveMerchant #:nodoc:
       def add_currency(post, options, money)
         post[:currency] = options[:currency] || currency(money)
       end
+
+
+
+
+      def api_request2(method, endpoint, parameters = nil, options = {})
+        raw_response = response = nil
+        begin
+          #raw_response = ssl_request(method, self.live_url + endpoint, post_data(parameters), headers(options))
+          #p self.live_url + endpoint
+          #p '/////?'
+          #p post_data(parameters)
+          #response = parse(raw_response)
+          #raw_response = ssl_request(method, self.live_url + endpoint, post_data(parameters), headers(options))
+          #p headers(options)
+          p 'asas'
+          p'//////0'
+          p raw_response
+          p raw_response =   raw_ssl_request(method, self.live_url + endpoint, post_data(parameters), headers(options)).body
+          response = parse(raw_response)
+          p response['id']
+
+
+        rescue ResponseError => e
+          raw_response = e.response.body
+          response = response_error(raw_response)
+        rescue JSON::ParserError
+          response = json_error(raw_response)
+        end
+        response
+      end
+
+
+      def commit2(method, url, parameters = nil, options = {})
+      # p '(((('
+    # p method
+    # p parameters
+    # p url
+    # p options
+    #p add_expand_parameters(parameters, options)
+    add_expand_parameters(parameters, options) if parameters
+    response = api_request2(method, url, parameters, options)
+    response['webhook_id'] = options[:webhook_id] if options[:webhook_id]
+    success = success_from(response, options)
+
+    card = card_from_response(response)
+    avs_code = AVS_CODE_TRANSLATOR["line1: #{card['address_line1_check']}, zip: #{card['address_zip_check']}"]
+    cvc_code = CVC_CODE_TRANSLATOR[card['cvc_check']]
+    Response.new(success,
+      message_from(success, response),
+      response,
+      test: response_is_test?(response),
+      #authorization: authorization_from(success, url, method, response),
+      avs_result: { code: avs_code },
+      cvv_result: cvc_code,
+      emv_authorization: emv_authorization_from_response(response),
+      error_code: success ? nil : error_code_from(response))
+  end
     end
   end
 end

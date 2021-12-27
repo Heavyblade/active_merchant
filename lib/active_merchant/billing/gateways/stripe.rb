@@ -192,6 +192,8 @@ module ActiveMerchant #:nodoc:
 
       # Note: creating a new credit card will not change the customer's existing default credit card (use :set_default => true)
       def store(payment, options = {})
+      
+        
         params = {}
         post = {}
 
@@ -205,7 +207,16 @@ module ActiveMerchant #:nodoc:
           return bank_token_response unless bank_token_response.success?
 
           params = { source: bank_token_response.params['token']['id'] }
+        
+        elsif payment.is_a?(ActiveMerchant::Billing::NetworkTokenizationCreditCard)
+          
+          card_token = tokenize_apple_google(payment, options)
+          
+
+          params = {source: card_token.params['token']['id']}
+          #require  'debug'
         else
+
           add_creditcard(params, payment, options)
         end
 
@@ -227,6 +238,7 @@ module ActiveMerchant #:nodoc:
           end
         else
           post[:expand] = [:sources]
+          
           commit(:post, 'customers', post.merge(params), options)
         end
       end
@@ -252,10 +264,36 @@ module ActiveMerchant #:nodoc:
       end
 
       def tokenize_apple_pay_token(apple_pay_payment_token, options = {})
-        token_response = api_request(:post, "tokens?pk_token=#{CGI.escape(apple_pay_payment_token.payment_data.to_json)}")
+        token_response = api_request(:post, "tokens?  =#{CGI.escape(apple_pay_payment_token.payment_data.to_json)}")
         success = !token_response.key?('error')
-
+        p token_response
         if success && token_response.key?('id')
+          Response.new(success, nil, token: token_response)
+        else
+          Response.new(success, token_response['error']['message'])
+        end
+      end
+
+      def tokenize_apple_google(payment, options = {})
+     
+      tokenization_method = 'android_pay'
+          if payment.source == 'apple_pay'
+            tokenization_method = 'apple_pay'
+          end
+          post ={
+            card: {
+              number: payment.number,
+              exp_month: payment.month,
+              exp_year: payment.year,
+              tokenization_method: tokenization_method,
+              eci: payment.eci,
+              cryptogram: 'reddelicious',
+            }
+          }
+        token_response = api_request2(:post, "tokens", post, {})
+        success = token_response['error'].nil?
+
+        if success && token_response['id']
           Response.new(success, nil, token: token_response)
         else
           Response.new(success, token_response['error']['message'])
@@ -646,9 +684,13 @@ module ActiveMerchant #:nodoc:
       end
 
       def api_request(method, endpoint, parameters = nil, options = {})
-        raw_response = response = nil
+      
+      raw_response = response = nil
+
         begin
-          raw_response = ssl_request(method, self.live_url + endpoint, post_data(parameters), headers(options))
+      #require 'debug'
+          raw_response = 
+          ssl_request(method, self.live_url + endpoint, post_data(parameters), headers(options))
           response = parse(raw_response)
         rescue ResponseError => e
           raw_response = e.response.body
@@ -661,6 +703,7 @@ module ActiveMerchant #:nodoc:
 
       def commit(method, url, parameters = nil, options = {})
         add_expand_parameters(parameters, options) if parameters
+        
         response = api_request(method, url, parameters, options)
         response['webhook_id'] = options[:webhook_id] if options[:webhook_id]
         success = success_from(response, options)
@@ -668,6 +711,7 @@ module ActiveMerchant #:nodoc:
         card = card_from_response(response)
         avs_code = AVS_CODE_TRANSLATOR["line1: #{card['address_line1_check']}, zip: #{card['address_zip_check']}"]
         cvc_code = CVC_CODE_TRANSLATOR[card['cvc_check']]
+        p response
         Response.new(success,
           message_from(success, response),
           response,
@@ -682,6 +726,7 @@ module ActiveMerchant #:nodoc:
       def authorization_from(success, url, method, response)
         return response.fetch('error', {})['charge'] unless success
 
+        #p response
         if url == 'customers'
           [response['id'], response.dig('sources', 'data').first&.dig('id')].join('|')
         elsif method == :post && (url.match(/customers\/.*\/cards/) || url.match(/payment_methods\/.*\/attach/))

@@ -35,6 +35,20 @@ class RemoteStripeIntentsTest < Test::Unit::TestCase
       verification_value: '737',
       month: 10,
       year: 2028)
+    @apple_pay = apple_pay_payment_token
+    @google_pay = network_tokenization_credit_card(
+        '4242424242424242',
+        payment_cryptogram: 'reddelicious',
+        # verification_value: '987',
+        source: :android_pay,
+        brand: 'visa',
+        eci: '05',
+        month: '09',
+        year: '2030',
+        first_name: 'Longbob',
+        last_name: 'Longsen'
+    )
+    @credit_card_token = 'card_1KBQpkAWOtgoysogjIqSmzES'
     @destination_account = fixtures(:stripe_destination)[:stripe_user_id]
   end
 
@@ -47,9 +61,17 @@ class RemoteStripeIntentsTest < Test::Unit::TestCase
 
     assert_equal 'requires_capture', authorization.params['status']
     refute authorization.params.dig('charges', 'data')[0]['captured']
-
     assert void = @gateway.void(authorization.authorization)
     assert_success void
+  end
+
+  def test_successful_store2
+    options = {
+      currency: 'GBP'
+    }
+    assert store = @gateway.store(@google_pay, options)
+    assert store.params['customer'].start_with?('cus_')
+
   end
 
   def test_successful_purchase
@@ -58,7 +80,6 @@ class RemoteStripeIntentsTest < Test::Unit::TestCase
       customer: @customer
     }
     assert purchase = @gateway.purchase(@amount, @visa_payment_method, options)
-
     assert_equal 'succeeded', purchase.params['status']
     assert purchase.params.dig('charges', 'data')[0]['captured']
   end
@@ -902,7 +923,6 @@ class RemoteStripeIntentsTest < Test::Unit::TestCase
     }
     assert store = @gateway.store(@visa_card, options)
     assert store.params['customer'].start_with?('cus_')
-
     assert purchase = @gateway.purchase(@amount, store.authorization, options)
     assert 'succeeded', purchase.params['status']
 
