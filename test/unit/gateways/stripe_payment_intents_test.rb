@@ -26,7 +26,6 @@ class StripePaymentIntentsTest < Test::Unit::TestCase
 
     @apple_pay = apple_pay_payment_token
     @google_pay = network_tokenization_credit_card(
-<<<<<<< HEAD
       '4242424242424242',
       payment_cryptogram: 'reddelicious',
       # verification_value: '987',
@@ -37,14 +36,6 @@ class StripePaymentIntentsTest < Test::Unit::TestCase
       year: '2030',
       first_name: 'Longbob',
       last_name: 'Longsen',
-=======
-      '4777777777777778',
-      payment_cryptogram: 'BwAQCFVQdwEAABNZI1B3EGLyGC8=',
-      verification_value: '987',
-      source: :google_pay,
-      brand: 'visa',
-      eci: '5'
->>>>>>> master
     )
   end
 
