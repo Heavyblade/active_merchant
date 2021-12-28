@@ -26,6 +26,7 @@ class StripePaymentIntentsTest < Test::Unit::TestCase
 
     @apple_pay = apple_pay_payment_token
     @google_pay = network_tokenization_credit_card(
+<<<<<<< HEAD
       '4242424242424242',
       payment_cryptogram: 'reddelicious',
       # verification_value: '987',
@@ -36,6 +37,14 @@ class StripePaymentIntentsTest < Test::Unit::TestCase
       year: '2030',
       first_name: 'Longbob',
       last_name: 'Longsen',
+=======
+      '4777777777777778',
+      payment_cryptogram: 'BwAQCFVQdwEAABNZI1B3EGLyGC8=',
+      verification_value: '987',
+      source: :google_pay,
+      brand: 'visa',
+      eci: '5'
+>>>>>>> master
     )
   end
 
@@ -497,6 +506,12 @@ class StripePaymentIntentsTest < Test::Unit::TestCase
   def test_supported_countries
     countries = %w(AE AT AU BE BG BR CA CH CY CZ DE DK EE ES FI FR GB GR HK HU IE IN IT JP LT LU LV MT MX MY NL NO NZ PL PT RO SE SG SI SK US)
     assert_equal countries.sort, StripePaymentIntentsGateway.supported_countries.sort
+  end
+
+  def test_unsuccessful_create_and_confirm_intent_using_apple_pay
+    assert error = @gateway.create_intent(@amount, @google_pay, @options.merge(return_url: 'https://www.example.com', capture_method: 'manual'))
+    assert_instance_of Response, error
+    assert_equal 'Direct Apple Pay and Google Pay transactions are not supported. Those payment methods must be stored before use.', error.message
   end
 
   private

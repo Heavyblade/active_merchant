@@ -68,13 +68,12 @@ module ActiveMerchant #:nodoc:
         commit('purchase', params: params, jwt: options)
       end
 
-      def refund(amount, credit_card, options)
+      def refund(amount, authorization, options = {})
         params = {}
+        params['merchantId'] = @options[:merchant_id]
+        params['paymentToken'] = get_hash(authorization)['payment_token'] || options[:payment_token]
         # refund amounts must be negative
         params['amount'] = ('-' + localized_amount(amount.to_f, options[:currency])).to_f
-        add_bank(params, options[:auth_code])
-        add_credit_card(params, credit_card, 'refund', options) unless options[:auth_code]
-        add_type_merchant_refund(params, options)
         commit('refund', params: params, jwt: options)
       end
 
@@ -86,12 +85,12 @@ module ActiveMerchant #:nodoc:
         params['paymentToken'] = get_hash(authorization)['payment_token']
         params['shouldGetCreditCardLevel'] = true
         params['source'] = options[:source]
-        params['tenderType'] = options[:tender_type]
+        params['tenderType'] = 'Card'
 
         commit('capture', params: params, jwt: options)
       end
 
-      def void(authorization, options)
+      def void(authorization, options = {})
         commit('void', iid: get_hash(authorization)['id'], jwt: options)
       end
 
@@ -121,12 +120,6 @@ module ActiveMerchant #:nodoc:
           gsub(%r((Authorization: Basic )\w+), '\1[FILTERED]').
           gsub(%r((number\\?"\s*:\s*\\?")[^"]*)i, '\1[FILTERED]').
           gsub(%r((cvv\\?"\s*:\s*\\?")[^"]*)i, '\1[FILTERED]')
-      end
-
-      def add_bank(params, auth_code)
-        params['authCode'] = auth_code
-        params['authOnly'] = false
-        params['availableAuthAmount'] = 0
       end
 
       def add_credit_card(params, credit_card, action, options)
@@ -188,43 +181,7 @@ module ActiveMerchant #:nodoc:
         params['source'] = options[:source]
         params['sourceZip'] = options[:billing_address][:zip] if options[:billing_address]
         params['taxExempt'] = false
-        params['tenderType'] = options[:tender_type]
-      end
-
-      def add_type_merchant_refund(params, options)
-        params['cardPresent'] = options[:card_present]
-        params['clientReference'] = options[:client_ref]
-        params['created'] = options[:created]
-        params['creatorName'] = options[:creator_name]
-        params['currency'] = options[:currency]
-        params['customerCode'] = options[:customer_code]
-        params['enteredAmount'] = options[:amount]
-        params['id'] = 0
-        params['invoice'] = options[:invoice]
-        params['isDuplicate'] = false
-        params['merchantId'] = @options[:merchant_id]
-        params['paymentToken'] = options[:payment_token]
-
-        params['posData'] = add_pos_data(options[:pos_data]) if options[:pos_data]
-
-        params['purchases'] = add_purchases_data(options[:purchases][0]) if options[:purchases]
-
-        params['reference'] = options[:reference]
-        params['requireSignature'] = false
-
-        params['risk'] = add_risk_data(options[:risk]) if options[:risk]
-
-        params['settledAmount'] = options[:settled_amt]
-        params['settledCurrency'] = options[:settled_currency]
-        params['settledDate'] = options[:created]
-        params['shipToCountry'] = options[:ship_to_country]
-        params['shouldGetCreditCardLevel'] = options[:should_get_credit_card_level]
-        params['source'] = options[:source]
-        params['status'] = options[:status]
-        params['tax'] = options[:tax]
-        params['taxExempt'] = options[:tax_exempt]
-        params['tenderType'] = options[:tender_type]
-        params['type'] = options[:type]
+        params['tenderType'] = 'Card'
       end
 
       def commit(action, params: '', iid: '', card_number: nil, jwt: '')
@@ -232,13 +189,13 @@ module ActiveMerchant #:nodoc:
           begin
             case action
             when 'void'
-              ssl_request(:delete, url(action, params, ref_number: iid), nil, request_headers)
+              parse(ssl_request(:delete, url(action, params, ref_number: iid), nil, request_headers))
             when 'verify'
               parse(ssl_get(url(action, params, credit_card_number: card_number), request_verify_headers(jwt)))
             when 'get_payment_status', 'create_jwt'
               parse(ssl_get(url(action, params, ref_number: iid), request_headers))
             when 'close_batch'
-              ssl_request(:put, url(action, params, ref_number: iid), nil, request_headers)
+              parse(ssl_request(:put, url(action, params, ref_number: iid), nil, request_headers))
             else
               parse(ssl_post(url(action, params), post_data(params), request_headers))
             end
@@ -249,10 +206,10 @@ module ActiveMerchant #:nodoc:
         response = { 'code' => '204' } if response == ''
         Response.new(
           success,
-          message_from(success, response),
+          message_from(response),
           response,
-          authorization: success && response['code'] != '204' ? authorization_from(response) : nil,
-          error_code: success || response['code'] == '204' || response == '' ? nil : error_from(response),
+          authorization: success ? authorization_from(response) : nil,
+          error_code: success || response == '' ? nil : error_from(response),
           test: test?
         )
       end
@@ -299,6 +256,8 @@ module ActiveMerchant #:nodoc:
       end
 
       def parse(body)
+        return body if body['code'] == '204'
+
         JSON.parse(body)
       rescue JSON::ParserError
         message = 'Invalid JSON response received from Priority Gateway. Please contact Priority Gateway if you continue to receive this message.'
@@ -315,12 +274,10 @@ module ActiveMerchant #:nodoc:
         success
       end
 
-      def message_from(succeeded, response)
-        if succeeded
-          response['status']
-        else
-          response['authMessage']
-        end
+      def message_from(response)
+        return response['details'][0] if response['details'] && response['details'][0]
+
+        response['authMessage'] || response['message'] || response['status']
       end
 
       def authorization_from(response)
@@ -331,7 +288,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def error_from(response)
-        response['errorCode']
+        response['errorCode'] || response['status']
       end
 
       def post_data(params)

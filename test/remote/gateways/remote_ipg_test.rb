@@ -5,7 +5,7 @@ class RemoteIpgTest < Test::Unit::TestCase
     @gateway = IpgGateway.new(fixtures(:ipg))
 
     @amount = 100
-    @credit_card = credit_card('5165850000000008', brand: 'mastercard', verification_value: '652', month: '12', year: '2022')
+    @credit_card = credit_card('5165850000000008', brand: 'mastercard', verification_value: '530', month: '12', year: '2022')
     @declined_card = credit_card('4000300011112220', brand: 'mastercard', verification_value: '652', month: '12', year: '2022')
     @visa_card = credit_card('4704550000000005', brand: 'visa', verification_value: '123', month: '12', year: '2022')
     @options = {
@@ -34,7 +34,7 @@ class RemoteIpgTest < Test::Unit::TestCase
     response = @gateway.store(@credit_card, @options)
     assert_success response
     assert_equal 'true', response.params['successfully']
-    payment_token = response.params['hosted_data_id']
+    payment_token = response.authorization
     assert payment_token
 
     response = @gateway.purchase(@amount, payment_token, @options)
