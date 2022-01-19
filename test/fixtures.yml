@@ -113,6 +113,12 @@ braintree_blue_with_processing_rules:
   public_key: Y
   private_key: Z
 
+braintree_blue_with_ach_enabled:
+  merchant_id: X
+  public_key: Y
+  private_key: Z
+  merchant_account_id: A
+
 braintree_orange:
   login: demo
   password: password

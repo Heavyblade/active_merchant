@@ -1,4 +1,5 @@
 require 'active_merchant/billing/gateways/braintree/braintree_common'
+require 'active_merchant/billing/gateways/braintree/token_nonce'
 require 'active_support/core_ext/array/extract_options'
 
 begin
@@ -46,6 +47,8 @@ module ActiveMerchant #:nodoc:
         cannot_refund_if_unsettled: 91506
       }
 
+      DIRECT_BANK_ERROR = 'Direct bank account transactions are not supported for authorize.'.freeze
+
       def initialize(options = {})
         requires!(options, :merchant_id, :public_key, :private_key)
         @merchant_account_id = options[:merchant_account_id]
@@ -73,6 +76,8 @@ module ActiveMerchant #:nodoc:
       end
 
       def authorize(money, credit_card_or_vault_id, options = {})
+        return Response.new(false, DIRECT_BANK_ERROR) if credit_card_or_vault_id.is_a? Check
+
         create_transaction(:sale, money, credit_card_or_vault_id, options)
       end
 
@@ -149,20 +154,14 @@ module ActiveMerchant #:nodoc:
       end
 
       def store(creditcard, options = {})
-        if options[:customer].present?
-          MultiResponse.new.tap do |r|
-            customer_exists_response = nil
-            r.process { customer_exists_response = check_customer_exists(options[:customer]) }
-            r.process do
-              if customer_exists_response.params['exists']
-                add_credit_card_to_customer(creditcard, options)
-              else
-                add_customer_with_credit_card(creditcard, options)
-              end
-            end
+        return add_customer_with_payment_method(creditcard, options) if options[:customer].blank?
+
+        MultiResponse.new.tap do |r|
+          r.process { check_customer_exists(options[:customer]) }
+          r.process do
+            process_by = r.params['exists'] ? :add_payment_method_to_customer : :add_customer_with_payment_method
+            send process_by, creditcard, options
           end
-        else
-          add_customer_with_credit_card(creditcard, options)
         end
       end
 
@@ -826,6 +825,69 @@ module ActiveMerchant #:nodoc:
             }
           end
         end
+      end
+
+      def add_customer_with_payment_method(payment_method, options)
+        if payment_method.is_a? Check
+          return Response.new false, payment_method.validate if payment_method.validate.present?
+
+          create_customer_from_payment_method(payment_method, options)
+          add_bank_account_to_customer(payment_method, options)
+        else
+          add_customer_with_credit_card(payment_method, options)
+        end
+      end
+
+      def add_payment_method_to_customer(payment_method, options)
+        if payment_method.is_a? Check
+          return Response.new false, payment_method.validate if payment_method.validate.present?
+
+          add_bank_account_to_customer(payment_method, options)
+        else
+          add_credit_card_to_customer(payment_method, options)
+        end
+      end
+
+      def add_bank_account_to_customer(payment_method, options)
+        requires!(options, :billing_address)
+        bank_account_nonce = TokenNonce.new(@braintree_gateway, options).create_token_nonce_for_payment_method payment_method
+        return Response.new(false, "Nonce couldn't be created") unless bank_account_nonce.present?
+
+        result = @braintree_gateway.payment_method.create(
+          customer_id: options[:customer],
+          payment_method_nonce: bank_account_nonce,
+          options: {
+            us_bank_account_verification_method: 'network_check'
+          }
+        )
+
+        Response.new(result.success?, message_from_result(result),
+          {
+            customer_vault_id: options[:customer],
+            bank_account_token: result.payment_method.token,
+            verified: (result.success? ? result.payment_method.verified : false)
+          })
+      end
+
+      def create_customer_from_payment_method(payment_method, options)
+        parameters = {
+          id: options[:customer],
+          first_name: payment_method.first_name,
+          last_name: payment_method.last_name,
+          email: scrub_email(options[:email]),
+          phone: options[:phone] || options.dig(:billing_address, :phone),
+          device_data: options[:device_data]
+        }.compact
+
+        result = @braintree_gateway.customer.create(parameters)
+        customer_id = result.customer.id if result.success?
+        options[:customer] = customer_id
+
+        Response.new(
+          result.success?,
+          message_from_result(result),
+          { customer_vault_id: customer_id }
+        )
       end
     end
   end

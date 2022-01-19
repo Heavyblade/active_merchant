@@ -1300,6 +1300,24 @@ class BraintreeBlueTest < Test::Unit::TestCase
     @gateway.purchase(100, credit_card('41111111111111111111'), { test: true, order_id: '1', stored_credential: { initiator: 'merchant', reason_type: 'moto', initial_transaction: true } })
   end
 
+  def test_raises_exeption_when_adding_bank_account_to_customer_without_billing_address
+    Braintree::CustomerGateway.any_instance.expects(:find).returns(true)
+    bank_account = check({ account_number: '1000000002', routing_number: '011000015' })
+
+    err = assert_raise(ArgumentError) do
+      @gateway.store(bank_account, { customer: 'abc123' })
+    end
+
+    assert_equal 'Missing required parameter: billing_address', err.message
+  end
+
+  def test_returns_error_on_authorize_when_passing_a_bank_account
+    bank_account = check({ account_number: '1000000002', routing_number: '011000015' })
+    response = @gateway.authorize(100, bank_account, {})
+
+    assert_failure response
+  end
+
   private
 
   def braintree_result(options = {})
